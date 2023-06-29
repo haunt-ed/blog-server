@@ -42,7 +42,6 @@ model Post {
 
   title String
   content String
-  likeAmount Int
 
   author User @relation(fields: [authorId], references: [id])
   authorId Int
@@ -58,7 +57,6 @@ model Comment {
   updatedAt DateTime @updatedAt
 
   content String
-  likeAmount Int
 
   author User @relation(fields: [authorId], references: [id])
   authorId Int

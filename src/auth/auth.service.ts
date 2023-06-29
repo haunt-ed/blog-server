@@ -79,8 +79,9 @@ export class AuthService {
   async saveTokenToDb(user: UserDto) {
     const userData = await this.usersService.getUserByEmail(user.email);
     const userDto: UserDto = {
-      email: user.email,
-      username: user.username,
+      email: userData.email,
+      username: userData.username,
+      id: userData.id,
     };
 
     const tokens = this.tokensService.generateTokens(userDto);

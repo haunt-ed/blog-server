@@ -8,8 +8,8 @@ export class UsersController {
   constructor(private userService: UsersService) {}
 
   @Get('/:id')
-  getUserById(@Param('id') id: number) {
-    return this.userService.getUserById(id);
+  getUserById(@Param('id') id: string) {
+    return this.userService.getUserById(+id);
   }
 
   @Get()
