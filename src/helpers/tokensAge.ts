@@ -1,0 +1,14 @@
+const MILISECOND_IN_SEECOND = 1000;
+const SECOND_IN_MINUTE = 60;
+const MINUTES_IN_HOUR = 60;
+const HOURS_IN_DAY = 24;
+const DAYS_IN_MONTH = 30;
+
+export const TOKENS_AGE = {
+  refresh:
+    MILISECOND_IN_SEECOND *
+    SECOND_IN_MINUTE *
+    MINUTES_IN_HOUR *
+    HOURS_IN_DAY *
+    DAYS_IN_MONTH,
+};
