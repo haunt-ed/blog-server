@@ -7,6 +7,7 @@ import {
   Post,
   Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PostsService } from './posts.service';
@@ -32,13 +33,13 @@ export class PostsController {
 
   @Post('/create')
   createPost(@Body() dto: CreatePostDto, @Req() req: Request) {
-    const token = this.getRefreshToken(req);
+    const token = this.getToken(req);
     return this.postsService.createPost(token, dto);
   }
 
   @Post('/update')
   updatePost(@Body() dto: UpdatePostDto, @Req() req: Request) {
-    const token = this.getRefreshToken(req);
+    const token = this.getToken(req);
     return this.postsService.updatePost(token, dto);
   }
 
@@ -49,13 +50,18 @@ export class PostsController {
     @Res() res: Response,
   ) {
     const { postId } = body;
-    const token = this.getRefreshToken(req);
+    const token = this.getToken(req);
     await this.postsService.deletePost(token, postId);
     res.sendStatus(204);
   }
 
-  getRefreshToken(req: Request): string {
-    const { cookies } = req;
-    return cookies.refreshToken || '';
+  private getToken(req: Request): string {
+    const [type, token] = req.headers.authorization?.split(' ') ?? [];
+
+    if (type !== 'Bearer') {
+      throw new UnauthorizedException();
+    }
+
+    return token;
   }
 }

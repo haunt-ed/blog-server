@@ -14,7 +14,7 @@ export class UsersService {
   async getUserById(id: number) {
     const user = await this.prisma.user.findFirst({
       where: { id },
-      select: { id: true, username: true, email: true, posts: true },
+      select: { id: true, username: true, email: true },
     });
     return user;
   }

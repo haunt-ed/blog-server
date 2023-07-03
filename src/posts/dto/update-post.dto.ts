@@ -8,10 +8,8 @@ export class UpdatePostDto {
   postId: number;
 
   @ApiProperty()
-  @IsString()
   title?: string;
 
   @ApiProperty()
-  @IsString()
   content?: string;
 }

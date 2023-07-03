@@ -87,7 +87,10 @@ export class AuthService {
     const tokens = this.tokensService.generateTokens(userDto);
     await this.tokensService.saveToken(userData.id, tokens.refreshToken);
 
-    return tokens;
+    return {
+      ...tokens,
+      user: userDto,
+    };
   }
 
   async checkForUniqueness(email: string, username: string) {

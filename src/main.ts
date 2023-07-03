@@ -18,6 +18,10 @@ async function bootstrap() {
   const config = app.get(ConfigService);
   const PORT = config.get<number>('API_PORT') || 3000;
 
+  // CORS setup
+  const CLIENT_URL = config.get<string>('CLIENT_URL');
+  app.enableCors({ origin: CLIENT_URL, credentials: true });
+
   // Swagger setup
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Cats example')

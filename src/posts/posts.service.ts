@@ -22,7 +22,10 @@ export class PostsService {
   }
 
   async getUserPosts(authorId: number) {
-    const posts = await this.prisma.post.findMany({ where: { authorId } });
+    const posts = await this.prisma.post.findMany({
+      where: { authorId },
+      orderBy: { createdAt: 'desc' },
+    });
     return posts;
   }
 
@@ -32,7 +35,7 @@ export class PostsService {
   }
 
   async createPost(token: string, dto: CreatePostDto) {
-    const userData = this.tokensService.validateRefreshToken(token);
+    const userData = this.tokensService.validateAccessToken(token);
     if (!userData) {
       throw new UnauthorizedException();
     }
@@ -50,7 +53,7 @@ export class PostsService {
   }
 
   async updatePost(token: string, dto: UpdatePostDto) {
-    const userData = this.tokensService.validateRefreshToken(token);
+    const userData = this.tokensService.validateAccessToken(token);
     const post = await this.getPostById(dto.postId);
 
     if (!post) {
@@ -73,7 +76,7 @@ export class PostsService {
   }
 
   async deletePost(token: string, postId: number) {
-    const userData = this.tokensService.validateRefreshToken(token);
+    const userData = this.tokensService.validateAccessToken(token);
     const post = await this.getPostById(postId);
 
     if (!post) {
