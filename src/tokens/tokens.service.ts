@@ -40,7 +40,7 @@ export class TokensService {
     }
   }
 
-  validateAccessToken(token: string) {
+  validateAccessToken(token: string): UserDto {
     try {
       const accessSecret = this.config.get<string>('ACCESS_SECRET');
       const userData = this.jwtService.verify(token, { secret: accessSecret });

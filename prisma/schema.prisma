@@ -21,6 +21,7 @@ model User {
 
   posts Post[]
   comments Comment[]
+  likes Likes[]
 
   @@map("users")
 }
@@ -47,6 +48,7 @@ model Post {
   authorId Int
 
   comments Comment[]
+  likes Likes[]
   
   @@map("posts")
 }
@@ -64,4 +66,15 @@ model Comment {
   postId Int
 
   @@map("comments")
+}
+
+model Likes {
+  post Post @relation(fields: [postId], references: [id])
+  postId Int
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+
+  @@id([postId, userId])
+  @@map("likes")
 }

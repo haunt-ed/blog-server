@@ -16,21 +16,51 @@ export class PostsService {
     private tokensService: TokensService,
   ) {}
 
-  async getAllPosts() {
-    const posts = await this.prisma.post.findMany();
-    return posts;
+  async getAllPosts({ take, skip, sortBy, order }) {
+    const searchConfig: any = {
+      include: { likes: true, comments: true },
+    };
+
+    if (!isNaN(take)) {
+      searchConfig.take = take;
+    }
+    if (!isNaN(skip)) {
+      searchConfig.skip = skip;
+    }
+    if (sortBy) {
+      searchConfig.orderBy = { [sortBy]: order === 'desc' ? order : 'asc' };
+    }
+    if (sortBy === 'likes') {
+      searchConfig.orderBy = {
+        [sortBy]: { _count: order === 'desc' ? order : 'asc' },
+      };
+    }
+
+    try {
+      const posts = await this.prisma.post.findMany(searchConfig);
+      return posts;
+    } catch (error) {
+      throw new HttpException(
+        'Something went wrong during sorting',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   async getUserPosts(authorId: number) {
     const posts = await this.prisma.post.findMany({
       where: { authorId },
+      include: { likes: true, comments: true },
       orderBy: { createdAt: 'desc' },
     });
     return posts;
   }
 
   async getPostById(id: number) {
-    const post = await this.prisma.post.findFirst({ where: { id } });
+    const post = await this.prisma.post.findFirst({
+      where: { id },
+      include: { likes: true, comments: true },
+    });
     return post;
   }
 
@@ -48,6 +78,7 @@ export class PostsService {
         title,
         content,
       },
+      include: { likes: true, comments: true },
     });
     return post;
   }
@@ -70,6 +101,7 @@ export class PostsService {
         title: dto.title || post.title,
         content: dto.content || post.content,
       },
+      include: { likes: true, comments: true },
     });
 
     return updatedPost;
@@ -87,6 +119,30 @@ export class PostsService {
       throw new UnauthorizedException();
     }
 
+    await this.prisma.likes.deleteMany({ where: { postId } });
     await this.prisma.post.delete({ where: { id: postId } });
+  }
+
+  async likePost(token: string, postId: number) {
+    const userData = this.tokensService.validateAccessToken(token);
+    const post = await this.prisma.post.findFirst({
+      where: { id: postId },
+      include: {
+        _count: {
+          select: { likes: { where: { userId: userData.id } } },
+        },
+      },
+    });
+
+    if (post._count.likes === 0) {
+      const like = await this.prisma.likes.create({
+        data: { userId: userData.id, postId: post.id },
+      });
+      return like;
+    }
+
+    await this.prisma.likes.delete({
+      where: { postId_userId: { postId: post.id, userId: userData.id } },
+    });
   }
 }
