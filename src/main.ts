@@ -16,7 +16,7 @@ async function bootstrap() {
 
   // Config setup
   const config = app.get(ConfigService);
-  const PORT = config.get<number>('API_PORT') || 3000;
+  const PORT = process.env.PORT || 5000;
 
   // CORS setup
   const CLIENT_URL = config.get<string>('CLIENT_URL');
