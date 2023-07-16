@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
@@ -15,12 +14,10 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // Config setup
-  const config = app.get(ConfigService);
   const PORT = process.env.PORT || 5000;
 
   // CORS setup
-  const CLIENT_URL = config.get<string>('CLIENT_URL');
-  app.enableCors({ origin: CLIENT_URL, credentials: true });
+  app.enableCors({ origin: true, credentials: true });
 
   // Swagger setup
   const swaggerConfig = new DocumentBuilder()
